@@ -34,6 +34,18 @@ namespace klassify
         {
             try
             {
+                if (Array.Exists(args, arg => arg == "-h" || arg == "--help"))
+                {
+                    ShowHelp();
+                    Console.WriteLine("\nArguments, except `--help`, can be specified in a .env file. See the example.");
+                    Console.WriteLine("These methods can be combined. Values set on the command line take precedence.\n");
+                    Console.WriteLine("Press a key to exit...");
+#if DEBUG
+                    Console.ReadKey();
+#endif
+                    Environment.Exit(0);
+                }
+
                 try
                 {
                     DotNetEnv.Env.Load();
@@ -111,6 +123,16 @@ namespace klassify
 
             Console.WriteLine("Press a key to exit...");
             Console.ReadKey();
+        }
+
+        private static void ShowHelp()
+        {
+            var help = Arguments.GetArgumentInfo(typeof(Program));
+
+            foreach (var item in help)
+            {
+                Console.WriteLine($" --{item.LongName}, -{item.ShortName}:\n\t{item.HelpText}");
+            }
         }
     }
 
