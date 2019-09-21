@@ -2,11 +2,12 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Text;
 using Utility.CommandLine;
 
 namespace klassify
 {
-    class Program
+    partial class Program
     {
         [Argument('o', "out", "output directory")]
         private static string OutputDirectory { get; set; }
