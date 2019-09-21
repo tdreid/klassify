@@ -27,6 +27,9 @@ namespace klassify
         [Argument('t', "timeout", "connection timeout")]
         private static string Timeout { get; set; }
 
+        [Argument('h', "help", "show help" )]
+        private static bool Help { get; set; }
+
         static void Main(string[] args)
         {
             try
