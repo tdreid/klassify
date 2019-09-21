@@ -28,14 +28,56 @@ namespace klassify
 
         static void Main(string[] args)
         {
-            Arguments.Populate();
-
-            if (String.IsNullOrEmpty(OutputDirectory))
+            try
             {
-                OutputDirectory = ".";
+                try
+                {
+                    DotNetEnv.Env.Load();
+                }
+                catch (FileNotFoundException)
+                {
+                    Console.WriteLine("No .env file detected. Using specified arguments or defaults.");
+                }
+                Arguments.Populate();
+
+                OutputDirectory = OutputDirectory
+                    .Or(Environment.GetEnvironmentVariable("KLASSIFY_OUT")
+                    .Or("."));
+                UserId = UserId
+                    .Or(Environment.GetEnvironmentVariable("KLASSIFY_USER"));
+                Password = Password
+                    .Or(Environment.GetEnvironmentVariable("KLASSIFY_PASSWORD"));
+                Server = Server
+                    .Or(Environment.GetEnvironmentVariable("KLASSIFY_SERVER")
+                    .Or("localhost"));
+                Database = Database
+                    .Or(Environment.GetEnvironmentVariable("KLASSIFY_DATABASE"));
+                Timeout = Timeout
+                    .Or(Environment.GetEnvironmentVariable("KLASSIFY_TIMEOUT")
+                    .Or("30"));
+
+                if (String.IsNullOrWhiteSpace(Database) || String.IsNullOrWhiteSpace(UserId) || String.IsNullOrWhiteSpace(Password))
+                {
+                    throw new ArgumentException("One or more of these required parameters not set: Database, UserId, Password.");
+                }
+
+                SqlConnection connection = new SqlConnection($"Server={Server};Initial Catalog={Database};Persist Security Info=False;User ID={UserId};Password={Password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout={Timeout};");
+                SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_CATALOG='{Database}'", connection);
+                DataTable table = new DataTable();
+                adapter.Fill(table);
+
+                foreach (DataRow row in table.Rows)
+                {
+                    Console.WriteLine(row["TABLE_NAME"]);
+                }
+
+                Console.WriteLine("Output Dir: " + OutputDirectory);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
             }
 
-            Console.WriteLine("Output Dir: " + OutputDirectory);
             Console.ReadKey();
         }
     }
