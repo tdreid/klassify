@@ -24,4 +24,12 @@ namespace klassify
             Console.ReadKey();
         }
     }
+
+    internal static class Extensions
+    {
+        public static string Or(this string value, string alternative)
+        {
+            return string.IsNullOrWhiteSpace(value) ? alternative : value;
+        }
+    }
 }
