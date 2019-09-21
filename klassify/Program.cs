@@ -62,23 +62,51 @@ namespace klassify
                     throw new ArgumentException("One or more of these required parameters not set: Database, UserId, Password.");
                 }
 
-                SqlConnection connection = new SqlConnection($"Server={Server};Initial Catalog={Database};Persist Security Info=False;User ID={UserId};Password={Password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout={Timeout};");
-                SqlDataAdapter adapter = new SqlDataAdapter($"SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_CATALOG='{Database}'", connection);
-                DataTable table = new DataTable();
-                adapter.Fill(table);
-
-                foreach (DataRow row in table.Rows)
+                using (SqlConnection connection = new SqlConnection($"Server={Server};Initial Catalog={Database};Persist Security Info=False;User ID={UserId};Password={Password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout={Timeout};"))
                 {
-                    Console.WriteLine(row["TABLE_NAME"]);
-                }
+                    SqlDataAdapter adapter = new SqlDataAdapter(
+                        $"SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE' AND TABLE_CATALOG='{Database}'",
+                        connection);
+                    DataTable table = new DataTable();
+                    adapter.Fill(table);
 
-                Console.WriteLine("Output Dir: " + OutputDirectory);
+                    foreach (DataRow row in table.Rows)
+                    {
+                        string tableName = row["TABLE_NAME"].ToString();
+                        string sql = $"declare @TableName sysname = '{tableName}'{queryText}";
+                        SqlCommand command = new SqlCommand(sql, connection);
+                        if (connection.State == ConnectionState.Closed)
+                        {
+                            connection.Open();
+                        }
+                        string code = (string)command.ExecuteScalar();
+
+                        if (String.IsNullOrWhiteSpace(code))
+                        {
+                            continue;
+                        }
+
+                        Directory.CreateDirectory(Path.GetFullPath(OutputDirectory));
+                        string path = Path.Combine(OutputDirectory, $"{tableName}.cs");
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                        using (FileStream fs = File.Create(path))
+                        {
+                            Byte[] info = new UTF8Encoding(true).GetBytes(code);
+                            fs.Write(info, 0, info.Length);
+                            Console.WriteLine($"Created {path}");
+                        }
+                    }
+                }
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
             }
 
+            Console.WriteLine("Press a key to exit...");
             Console.ReadKey();
         }
     }
