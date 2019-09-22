@@ -39,8 +39,8 @@ namespace klassify
                     ShowHelp();
                     Console.WriteLine("\nArguments, except `--help`, can be specified in a .env file. See the example.");
                     Console.WriteLine("These methods can be combined. Values set on the command line take precedence.\n");
-                    Console.WriteLine("Press a key to exit...");
 #if DEBUG
+                    Console.WriteLine("Press a key to exit...");
                     Console.ReadKey();
 #endif
                     Environment.Exit(0);
