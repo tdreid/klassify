@@ -120,9 +120,10 @@ namespace klassify
             {
                 Console.WriteLine(exception.Message);
             }
-
+#if DEBUG
             Console.WriteLine("Press a key to exit...");
             Console.ReadKey();
+#endif
         }
 
         private static void ShowHelp()
