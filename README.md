@@ -39,7 +39,7 @@ line take precedence.
 
 ## Known Issues
 
-- Asterix (*) and other special characters in column names may result in an 
+- Asterisk (*) and other special characters in column names may result in an 
   empty class being generated for the table to which that column belongs.
 
 ## License
