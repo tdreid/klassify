@@ -23,7 +23,7 @@ based on the tables in your SQL Server database.
 ```
 
 Arguments, except `--help`, can be specified in a `.env` file. See 
-[the example](./example.env). Place any `.env` file in the same folder 
+[the example](./klassify/example.env). Place any `.env` file in the same folder 
 as `klassify.exe`. These methods can be combined. Values set on the command 
 line take precedence.
 
