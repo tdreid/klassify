@@ -10,7 +10,7 @@ For example, given a table `Users` that looks like this:
 | Id |       Name       | Username  |        Email        |
 +----+------------------+-----------+---------------------+
 |  1 | Leanne Graham    | Bret      | Sincere@april.biz   |
-|  2 | Ervin Howell     | Antonette | Shanna@melissa.tv    |
+|  2 | Ervin Howell     | Antonette | Shanna@melissa.tv   |
 |  3 | Clementine Bauch | Samantha  | Nathan@yesenia.net  |
 +----+------------------+-----------+---------------------+
 ```
